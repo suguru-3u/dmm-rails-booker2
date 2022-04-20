@@ -21,47 +21,21 @@
               <td><%= link_to 'Edit', edit_book_path(@book), class: "btn btn-sm btn-success edit_book_#{@book.id}" %></td>
               <td><%= link_to 'Destroy', book_path(@book), method: :delete, data: { confirm: '本当に消しますか？' }, class: "btn btn-sm btn-danger destroy_book_#{@book.id}"%></td>
             <% end %>
-          <td>
-          <% if @book.favorited_by?(current_user) %>
-            <p>
-              <%= link_to book_favorites_path(@book), method: :delete do %>
-                ♥<%= @book.favorites.count %> いいね
-              <% end %>
-            </p>
-            <% else %>
-            <p>
-              <%= link_to book_favorites_path(@book), method: :post do %>
-                ♡<%= @book.favorites.count %> いいね
-              <% end %>
-            </p>
-          <% end %>
-        </td>
+          <td class="favorite-btn_<%= @book.id %>">
+            <%= render 'favorites/favorite-btn',book: @book %>
+          </td>
           <td>
             コメント件数：<%= @book.post_comments.count %>
           </td>
         </tr>
       </table>
 
-      <table class="table">
-				<tbody>
-					<% @book.post_comments.each do |post_comments| %>
-					<tr>
-				  <td><%= link_to(post_comments.user) do %>
-            <%= image_tag post_comments.user.get_profile_image, size:"100x100" %><br>
-            <%= post_comments.user.name %>
-            <% end %>
-          </td>
-						<td><%= post_comments.comment %></td>
-						<% if post_comments.user_id == current_user.id %>
-						<td><%= link_to 'Destroy',book_post_comment_path(@book.id), method: :delete, data: {confirm: "本当に削除してもよろしいですか？"}, class: "btn-sm btn-danger" %></td>
-						<% end %>
-					</tr>
-					<% end %>
-				</tbody>
-			</table>
+      <div class="comments_area">
+        <%= render 'post_comments/coment-index',book: @book %>
+      </div>
 
 			<%# コメント機能 %>
-			<%= form_with model: [@book, @post_comment] do |f| %>
+			<%= form_with model: [@book, @post_comment] , local: false do |f| %>
 			  <%= f.text_area :comment, class: "form-control", rows: 5 %>
 			  <%= f.submit "投稿", class: "btn btn-primary mt-5" %>
 			<% end %>
